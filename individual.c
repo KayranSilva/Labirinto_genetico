@@ -30,6 +30,7 @@ static void push(PilhaMovimentos *p, char mov) {
     }
 }
 
+static char peek(PilhaMovimentos *p) __attribute__((unused));
 static char peek(PilhaMovimentos *p) {
     if (p->topo >= 0) {
         return p->movimentos[p->topo];
@@ -52,12 +53,14 @@ void calcular_aptidao(Individuo *ind, Configuracoes *config) {
     ind->colisoes = 0;
     ind->passos_validos = 0;
     char ultimo_mov = '\0';
+    ind->desvio_padrao = 0.0f;
+    ind->pontuacao_movimentos = 0.0f;
 
     for (int i = 0; i < config->MAX_MOVIMENTOS; i++) {
         char mov = ind->movimentos[i];
 
         if (movimento_redundante(ultimo_mov, mov)) {
-            ind->colisoes += 100;
+            ind->colisoes++;
             continue;
         }
 
@@ -71,7 +74,7 @@ void calcular_aptidao(Individuo *ind, Configuracoes *config) {
 
         if (nx < 0 || nx >= config->LINHAS || ny < 0 || ny >= config->COLUNAS ||
             labirinto[nx][ny] == '#') {
-            ind->colisoes += 100;
+            ind->colisoes++;
             break;
         }
 
@@ -86,9 +89,8 @@ void calcular_aptidao(Individuo *ind, Configuracoes *config) {
 
     ind->distancia = abs(x - saida_x) + abs(y - saida_y);
 
-
     float fator = 1.0f + config->PESO_DESVIO * ind->desvio_padrao;
-    float base = 1000.0f - config->PESO_DISTANCIA * ind->distancia
+    float base = 5000.0f - config->PESO_DISTANCIA * ind->distancia
                              - config->PESO_OBSTACULO * ind->colisoes;
     ind->aptidao = (base > 0.0f) ? (int)(base * fator) : 0;
 
@@ -96,6 +98,7 @@ void calcular_aptidao(Individuo *ind, Configuracoes *config) {
 }
 
 void imprimir_individuo(Individuo *ind, Configuracoes *config) {
+    (void)config; /* Parameter not used yet */
     printf("Aptidao: %d | Distancia: %d | Colisoes: %d | Passos: %d\n",
            ind->aptidao, ind->distancia, ind->colisoes, ind->passos_validos);
     printf("Movimentos: ");

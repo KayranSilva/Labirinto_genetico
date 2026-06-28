@@ -1,7 +1,16 @@
+#define _POSIX_C_SOURCE 200809L
 #include "maze.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/* Manual implementation of strdup for portability */
+static char* string_duplicate(const char *s) {
+    if (!s) return NULL;
+    char *dup = malloc(strlen(s) + 1);
+    if (dup) strcpy(dup, s);
+    return dup;
+}
 
 char **labirinto = NULL;
 int inicio_x, inicio_y;
@@ -32,7 +41,7 @@ void carregar_labirinto(Configuracoes *config) {
     for (int i = 0; i < linhas; i++) {
         fgets(buffer, sizeof(buffer), f);
         buffer[strcspn(buffer, "\r\n")] = '\0';
-        labirinto[i] = strdup(buffer);
+        labirinto[i] = string_duplicate(buffer);
     }
     fclose(f);
 }

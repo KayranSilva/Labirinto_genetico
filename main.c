@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
     imprimir_labirinto(&config);
 
     char caminho_log[300];
-    snprintf(caminho_log, sizeof(caminho_log), "logs/%s", config.ARQUIVO_LOG);
+    snprintf(caminho_log, sizeof(caminho_log), "Logs/%s", config.ARQUIVO_LOG);
 
     FILE *logFile = fopen(caminho_log, "w");
     if (!logFile) {
